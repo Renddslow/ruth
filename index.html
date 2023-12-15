@@ -115,6 +115,70 @@
         display: flex;
         flex-wrap: wrap;
       }
+
+      dialog::backdrop {
+        background-color: rgba(0, 0, 0, 0);
+      }
+
+      dialog {
+        position: absolute;
+        left: 500px;
+        top: 50%;
+        transform: translateY(-50%);
+        padding: 24px;
+        border-radius: 4px;
+        width: 400px;
+      }
+
+      dialog h2 {
+        font-size: 18px;
+        text-align: center;
+      }
+
+      fieldset {
+        border: none;
+        padding: 0;
+        margin: 0;
+      }
+
+      .toggle {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        grid-gap: 8px;
+      }
+
+      .toggle input {
+        display: none;
+      }
+
+      .toggle label {
+        display: block;
+        padding: 8px 12px;
+        border: 1px solid #c1c1c1;
+        border-radius: 4px;
+        cursor: pointer;
+        text-align: center;
+      }
+
+      .toggle input:checked + label {
+        background-color: #29dc71;
+      }
+
+      .control {
+        display: grid;
+        grid-gap: 8px;
+      }
+
+      form {
+        display: grid;
+        grid-gap: 24px;
+      }
+      .three-row {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, max-content));
+        justify-content: space-between;
+        text-align: center;
+      }
     </style>
   </head>
   <body>
@@ -138,6 +202,7 @@
         <label for="hyperlink-picker">Select Hyperlink</label>
         <select id="hyperlink-picker">
           <option selected disabled>Select One</option>
+          <option>Gen 12:10–13</option>
           <option>Gen 19:27–33, 36–37</option>
           <option>Gen 38:1–11</option>
           <option>Num 22:1–6</option>
@@ -183,7 +248,56 @@
         <div class="bible-text" id="rut1"></div>
       </article>
     </div>
-    <dialog id="character-panel"></dialog>
+    <dialog id="character-panel">
+      <h2 id="character-name"></h2>
+      <form>
+        <div class="control">
+          <label for="role">Role</label>
+          <select id="role">
+            <option disabled selected>Select a Role</option>
+            <option>Protagonist</option>
+            <option>Antagonist</option>
+            <option>Satiric Portrait</option>
+            <option>Entourage</option>
+            <option>Stereotype</option>
+            <option>Foil</option>
+            <option>Agent</option>
+          </select>
+        </div>
+        <div class="control">
+          <label>Dynamism</label>
+          <div class="toggle">
+            <input
+              id="developing"
+              type="radio"
+              name="dynamism"
+              value="developing"
+            />
+            <label for="developing">Developing</label>
+            <input id="static" type="radio" name="dynamism" value="static" />
+            <label for="static">Static</label>
+          </div>
+        </div>
+        <div class="control">
+          <label>Depth</label>
+          <div class="toggle">
+            <input id="round" type="radio" name="depth" value="round" />
+            <label for="round">Round</label>
+            <input id="flat" type="radio" name="depth" value="flat" />
+            <label for="flat">Flat</label>
+          </div>
+        </div>
+        <div class="control">
+          <label for="id">Identification</label>
+          <input id="id" type="range" />
+          <div class="three-row">
+            <p>Strong Dislike</p>
+            <p>Weak</p>
+            <p>Strong Like</p>
+          </div>
+        </div>
+      </form>
+    </dialog>
     <script src="/download-ruth.js"></script>
     <script src="/annotation.js"></script>
     <script>
@@ -199,6 +313,18 @@
             el.dataset.literal = label;
           });
         });
+        document
+          .getElementById("launch-char")
+          .addEventListener("click", async (e) => {
+            const select = document.getElementById("character-picker");
+            const selected = select.options[select.selectedIndex]?.value;
+            if (!selected) return;
+
+            const dialog = document.getElementById("character-panel");
+            dialog.showModal();
+            dialog.querySelector("form").reset();
+            document.getElementById("character-name").innerText = selected;
+          });
         document
           .getElementById("launch-hyperlink")
           .addEventListener("click", async (e) => {
