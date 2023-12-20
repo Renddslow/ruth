@@ -1,19 +1,4 @@
-const parseForLiterals = (text) => {
-  const words = text.split(" ");
-  const literals = [];
-  for (let i = 0; i < words.length; i++) {
-    const token = words[i];
-    if (token.startsWith("[[")) {
-      const idx = words.slice(i).findIndex((w) => w.includes("]]"));
-      const word = words.slice(i, i + idx + 1).join(" ");
-      literals.push(word);
-      i += idx;
-      continue;
-    }
-    literals.push(token);
-  }
-  return literals;
-};
+const parseForLiterals = (text) => text.split(/\s*(?:\[\[|]])\s*/);
 
 const scriptureToHTML = (scripture, node) => {
   scripture.forEach((verse) => {
@@ -29,10 +14,9 @@ const scriptureToHTML = (scripture, node) => {
 
       parseForLiterals(line).forEach((word) => {
         const wordElement = document.createElement("span");
-        if (word.startsWith("[[")) {
+        if (word.includes("|")) {
           wordElement.className = "literal";
-          const label = word.replace(/\[\[(.*?)\|(.*?)]]/, "$1");
-          const literal = word.replace(/\[\[(.*?)\|(.*?)]]/, "$2");
+          const [label, literal] = word.split("|");
           wordElement.innerText = label;
           wordElement.dataset.literal = literal;
         } else {
