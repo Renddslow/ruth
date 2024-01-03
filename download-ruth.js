@@ -12,18 +12,28 @@ const scriptureToHTML = (scripture, node) => {
     verse.text.split("\n").forEach((line) => {
       const lineElement = document.createElement("p");
 
-      parseForLiterals(line).forEach((word) => {
-        const wordElement = document.createElement("span");
-        if (word.includes("|")) {
-          wordElement.className = "literal";
-          const [label, literal] = word.split("|");
-          wordElement.innerText = label;
-          wordElement.dataset.literal = literal;
-        } else {
-          wordElement.innerText = word;
-        }
-        lineElement.appendChild(wordElement);
-      });
+      parseForLiterals(line)
+        .reduce((acc, item) => {
+          if (item.includes("|")) {
+            acc.push(item);
+          } else {
+            acc.push(...item.split(/\s+/));
+          }
+          return acc;
+        }, [])
+        .forEach((word) => {
+          console.log(word);
+          const wordElement = document.createElement("span");
+          if (word.includes("|")) {
+            wordElement.className = "literal";
+            const [label, literal] = word.split("|");
+            wordElement.innerText = label;
+            wordElement.dataset.literal = literal;
+          } else {
+            wordElement.innerText = word;
+          }
+          lineElement.appendChild(wordElement);
+        });
 
       verseText.appendChild(lineElement);
     });
